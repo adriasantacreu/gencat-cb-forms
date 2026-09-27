@@ -1,0 +1,28 @@
+# Entorns virtuals
+.venv/
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Credencials i secrets
+*.json
+!example_credentials.json
+.env
+.secrets/
+token.pickle
+token.json
+credentials.json
+
+# Sortides temporals i arxius descarregats
+output/
+downloads/
+scratch/
+crops/
+*.pdf
