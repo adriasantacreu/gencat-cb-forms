@@ -54,11 +54,40 @@ def main():
     p_bld.add_argument("--assets-folder", required=True, help="ID de la carpeta d'imatges a Drive")
     p_bld.add_argument("--editor", default=None, help="Correu d'editor addicional")
 
+    p_c = subparsers.add_parser("cerca", help="Cerca per paraules clau (FTS5)")
+    p_c.add_argument("text")
+    p_c.add_argument("--etapa", choices=["4ESO", "2ESO"])
+    p_c.add_argument("--materia", choices=["mat", "cte"])
+    p_c.add_argument("--limit", type=int, default=15)
+    subparsers.add_parser("check", help="Comprova la BD (recompte, captures, duplicats, marges)")
+    p_f = subparsers.add_parser("fulls", help="Full de miniatures per a la revisió")
+    p_f.add_argument("--out", required=True)
+    p_f.add_argument("--prova", help="p. ex. CB4ESO_MAT_2026")
     subparsers.add_parser("index", help="Reconstrueix cb_catalog.db (registre + captures + OCR)")
 
     args = parser.parse_args()
 
-    if args.command == "index":
+    if args.command == "cerca":
+        from catalog import connect
+        q = ("SELECT i.id, i.punts, i.solucio_text s, substr(replace(i.enunciat_text,char(10),' '),1,70) t, i.enunciat_img, i.context_img "
+             "FROM items_fts f JOIN items i ON i.id=f.id WHERE items_fts MATCH ?")
+        par = [args.text]
+        if args.etapa:
+            q += " AND i.etapa=?"; par.append("CB" + args.etapa)
+        if args.materia:
+            q += " AND i.materia=?"; par.append(args.materia)
+        for r in connect().execute(q + " ORDER BY rank LIMIT ?", par + [args.limit]):
+            print(f"{r['id']}  [{r['s']}]  {r['t']}\n    {r['enunciat_img']}  ·  ctx: {r['context_img']}")
+
+    elif args.command == "check":
+        from check import run
+        sys.exit(run())
+
+    elif args.command == "fulls":
+        from fulls import make_fulls
+        print(make_fulls(Path(args.out), args.prova))
+
+    elif args.command == "index":
         try:
             from src.indexer import index
         except ImportError:

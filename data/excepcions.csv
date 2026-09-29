@@ -1,0 +1,13 @@
+id,check,motiu
+CB2ESO_CTE_2025/context_act3_intro.png,h-context-net,"Fals positiu: llista numerada d'instruccions de l'app, no un ítem"
+CB2ESO_CTE_2026/context_act3_climograma.png,h-context-net,"Fals positiu: llista numerada de variables del climograma, no un ítem"
+CB2ESO_MAT_2026/context_act1_pica_pica.png,h-context-net,Captura de Forms auditada: acaba amb la primera línia de l'ítem 3 (tall pel context); no es toca
+CB4ESO_CTE_2025/context_act1_fig2.png,h-context-net,Captura de Forms auditada: la figura és a mig enunciat i porta el començament de l'ítem 4
+CB4ESO_CTE_2025/context_act2_fig3.png,h-context-net,Captura de Forms auditada: l'enunciat de l'ítem 12 va amb la figura 3
+CB4ESO_CTE_2025/context_act2_taula2.png,h-context-net,Captura de Forms auditada: l'enunciat de l'ítem 10 va amb la taula 1
+CB4ESO_CTE_2026/context_act1_grafic.png,h-context-net,Captura de Forms auditada: l'enunciat de l'ítem 3 va amb el gràfic
+CB4ESO_CTE_2026/context_act2_altruista.png,h-context-net,Captura de Forms auditada: enunciat de l'ítem 18 amb la figura 3 (arrossega el final de l'ítem anterior)
+CB4ESO_CTE_2026/context_act2_altruista.png,g-marges,Captura de Forms auditada: el peu de la figura fa un marge dret de 43 px
+CB4ESO_MAT_2026/context_act4_intro.png,h-context-net,Captura de Forms auditada: acaba amb la primera línia de l'ítem 22
+CB2ESO_CTE_2024/context_act4_intro.png,h-context-net,"REAL: conté l'ítem 19 sencer amb opcions; captura de Forms ja en ús, pendent de decidir amb l'Adrià"
+CB2ESO_CTE_2024/context_act4_taula.png,h-context-net,"REAL: conté l'ítem 22 sencer amb opcions; captura de Forms ja en ús, pendent de decidir amb l'Adrià"
