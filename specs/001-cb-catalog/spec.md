@@ -1,6 +1,6 @@
 # Especificació de la funcionalitat: BD consultable de CCBB
 
-**Branca**: `001-cb-catalog` · **Creada**: 2026-09-29 · **Estat**: Esborrany v2 (pendent de validació de l'Adrià)
+**Branca**: `001-cb-catalog` · **Creada**: 2026-09-29 · **Estat**: Validada per l'Adrià (2026-09-29)
 
 **Entrada**: fase 3 de `docs/plans/2026-09-29_proves-oficials-refet.md`. Decisions fixades: D3 (la BD viu aquí, ordre `cb index`), D4, només les 18 proves existents.
 
@@ -8,6 +8,10 @@
 
 - **A. BD consultable per paraules clau** (captures + text/OCR), amb el mateix esquema que PAU. *Això és el que falta.*
 - **B. Captures netes per als Google Forms.** *Ja fet i auditat* (18 Forms, `answers_registry.py` amb 582 ítems). **No es toca**: aquesta feina és l'entrada de la BD, no s'hi refà.
+
+## Decisió (Adrià, 2026-09-29)
+
+Les captures són **seccionades** (context, ítem 1, ítem 2…), tal com ja necessiten els Forms. **No es fa cap captura global de l'exercici** (seria la pàgina sencera). Un exercici és el conjunt de captures que comparteixen `activitat_id`: la BD les lliga i qui consumeix (cerca, mostrari) les apila en pantalla.
 
 ## Principi: aprofitar, no refer
 
@@ -45,7 +49,6 @@ Les captures de `banc-proves-oficials/.cache/cb` **no** serveixen (segmentació 
 1. Que les imatges de 4t no siguin recuperables de Drive → es regeneren amb l'estructura del registre (més feina; s'avisa abans).
 2. Text d'ítems amb gràfics: OCR només on el PDF no té text.
 
-## Preguntes per a l'Adrià
+## Decisions preses
 
-- (a) Bloc/tema per activitat (Mat: Numeració, Espai i forma, Canvi i relacions, Estadística; CTE: per àmbit), et va bé?
-- (b) Confirmes no versionar `crops/` ni la BD?
+- Bloc/tema per activitat (proposta, `revisat=no`); `crops/` i BD no es versionen.
