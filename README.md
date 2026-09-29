@@ -168,3 +168,16 @@ GitHub: [@adriasantacreu](https://github.com/adriasantacreu)
 ## 📄 Llicència
 
 Aquest projecte està sota llicència [MIT](LICENSE). Els continguts de les proves d'avaluació són propietat del Departament d'Educació de la Generalitat de Catalunya i es fan servir amb finalitats exclusivament pedagògiques.
+
+## Catàleg de CCBB (`scripts/cb`)
+
+BD consultable (SQLite + FTS5) de les 18 proves (4ESO MAT/CTE 2021–26, 2ESO MAT/CTE 2024–26): 627 ítems, 77 activitats. Cada ítem té captura pròpia, text OCR, resposta oficial (`answers_registry.py`) i el context de l'activitat enllaçat. Spec: `specs/001-cb-catalog/`.
+
+| Ordre | Què fa |
+|---|---|
+| `scripts/cb index` | Reconstrueix `docencia/materials/competencies_basiques/cb_catalog/` (BD + `crops/`, fora del git) |
+| `scripts/cb check` | Recompte = registre, captura i text per ítem, 0 duplicats, marges, contextos nets; excepcions a `data/excepcions.csv` |
+| `scripts/cb cerca TEXT [--etapa 4ESO\|2ESO] [--materia mat\|cte]` | Cerca per paraules clau |
+| `scripts/cb fulls --out F.pdf [--prova ID]` | Full de miniatures per revisar |
+
+Bloc i tema (`data/cb_temes.csv`) són una proposta automàtica (`revisat=no`) pendent de revisió. Les captures són les de Forms (seccionades: context + un ítem cada una); no es regeneren aquí.

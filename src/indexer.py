@@ -21,6 +21,16 @@ ETAPA = {"4ESO": "CB4ESO", "2ESO": "CB2ESO"}
 CONV = {"4ESO": "CB", "2ESO": "AD"}
 
 
+def load_temes() -> dict:
+    """data/cb_temes.csv (proposta, revisat=no fins que l'Adrià la revisi): activitat_id → (bloc, tema)."""
+    import csv
+    f = Path(__file__).resolve().parents[1] / "data" / "cb_temes.csv"
+    if not f.exists():
+        return {}
+    with open(f, newline="", encoding="utf-8") as fh:
+        return {r["activitat_id"]: (r["bloc"], r["tema"]) for r in csv.DictReader(fh)}
+
+
 def prova_id(k) -> str:
     return f"{ETAPA[k[0]]}_{k[1]}_{k[2]}"
 
@@ -102,6 +112,7 @@ def parse(k, d: Path):
 
 def index(verbose: bool = True) -> dict:
     con = reset()
+    temes = load_temes()
     stats = {}
     jobs = []  # (k, sourcedir)
     for k in sorted(STRUCTURES):
@@ -128,7 +139,7 @@ def index(verbose: bool = True) -> dict:
             iid = f"{pid}_I{it['numero']}" + (f"_{it['sub']}" if it["sub"] else "")
             row = dict(id=iid, prova=pid, etapa=ETAPA[k[0]], materia=k[1].lower(), any=k[2], convocatoria=CONV[k[0]],
                        activitat_id=a["id"], numero=it["numero"], sub=it["sub"], pare=f"{pid}_I{it['numero']}" if it["sub"] else None,
-                       tipus=it["tipus"], punts=it["punts"], bloc=None, tema=None,
+                       tipus=it["tipus"], punts=it["punts"], bloc=temes.get(a["id"], (None, None))[0], tema=temes.get(a["id"], (None, None))[1],
                        enunciat_text=txt.get(str(d / it["img"]), "") if rel(it["img"]) else "",
                        solucio_text=it["solucio"] or "", resposta=str(it["resposta"]) if it["resposta"] is not None else None,
                        enunciat_img=rel(it["img"]), context_img=rel(it["ctx"]),
