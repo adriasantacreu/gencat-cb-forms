@@ -6,6 +6,6 @@
 - [x] T004 `check.py` (`cb check`): 582 ítems, cada captura pròpia present, 0 duplicats entre captures d'ítems diferents, sub-preguntes amb `pare`, auditoria — `cb check` verd: 627 ítems, 77 activitats, 12 excepcions documentades
 - [x] T005 `cb cerca` + 5 cerques fixades — `cb cerca` provat (probabilitat, percentatge, energia, recta, ascensor)
 - [x] T006 `fulls.py` (`cb fulls`) i pujada a Drive — full de 18 proves al Drive
-- [ ] T007 `data/cb_temes.csv` (bloc/tema, `revisat=no`) i `data/excepcions.csv`
-- [ ] T008 Check diari, README, `docs/METODOLOGIA.md`, `scripts/comandes --readme`
+- [x] T007 `data/cb_temes.csv` (bloc/tema, `revisat=no`) i `data/excepcions.csv` — `data/cb_temes.csv` (77 activitats, revisat=no)
+- [x] T008 Check diari, README, `docs/METODOLOGIA.md`, `scripts/comandes --readme` — fet (scripts/cb, check diari, README)
 - [ ] T009 PORTA: OK de l'Adrià als fulls de miniatures (18 proves)
