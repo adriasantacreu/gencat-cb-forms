@@ -1,102 +1,51 @@
-# Especificació de la funcionalitat: BD de Competències Bàsiques (CCBB)
+# Especificació de la funcionalitat: BD consultable de CCBB
 
-**Branca**: `001-cb-catalog` · **Creada**: 2026-09-29 · **Estat**: Esborrany (pendent de validació de l'Adrià)
+**Branca**: `001-cb-catalog` · **Creada**: 2026-09-29 · **Estat**: Esborrany v2 (pendent de validació de l'Adrià)
 
-**Entrada**: fase 3 de `docs/plans/2026-09-29_proves-oficials-refet.md`. Decisions ja preses (no replantejar): D3 (la BD viu a `gencat-cb-forms`, ordre `cb index`), D4 (PAU i CCBB surten junts al mostrari), només les 18 proves que ja tenim.
+**Entrada**: fase 3 de `docs/plans/2026-09-29_proves-oficials-refet.md`. Decisions fixades: D3 (la BD viu aquí, ordre `cb index`), D4, només les 18 proves existents.
 
-## Context
+## Objectiu (dues coses, i ja n'hi ha una de feta)
 
-`gencat-cb-forms` sap crear un Google Form autocorregible per prova (segmentador, auditor i `answers_registry.py` amb 582 respostes validades), però **no té cap BD**: les captures auditades vivien a `scratch/crops_*_clean` i només en queden les de 2n d'ESO (6 de 18 proves); les de 4t s'han perdut i s'han de regenerar. El registre defineix a mà l'estructura de cada prova (seccions, imatges de context amb noms triats a mà, ítems). El segmentador geomètric automàtic és genèric i no en reprodueix la granularitat (contextos compartits per subconjunts d'ítems, sub-ítems `item_6_1`). Un intent anterior (`banc-proves-oficials`) va reutilitzar la captura del pare per als sub-ítems i va deixar 410/627 textos amb només el resum de l'activitat.
+- **A. BD consultable per paraules clau** (captures + text/OCR), amb el mateix esquema que PAU. *Això és el que falta.*
+- **B. Captures netes per als Google Forms.** *Ja fet i auditat* (18 Forms, `answers_registry.py` amb 582 ítems). **No es toca**: aquesta feina és l'entrada de la BD, no s'hi refà.
 
-**Diferència amb PAU**: a PAU la unitat és l'exercici; aquí és l'**activitat** (context + ítems, de vegades amb sub-ítems). Un ítem no s'entén sense el seu context, i el context es comparteix entre ítems.
+## Principi: aprofitar, no refer
 
-## Proves cobertes (18)
+| Ja existeix | Ús |
+|---|---|
+| `answers_registry.py` (estructura: activitats, contextos, ítems, sub-ítems + clau) | Font de veritat del recompte i de l'estructura |
+| Captures auditades de 2n ESO (`scratch/crops_2eso*_clean`, 6 proves) | S'importen tal qual a `crops/` |
+| Captures auditades de 4t ESO (12 proves) | **Perdudes localment**; s'usaven als Forms, per tant les imatges són a Drive (carpeta d'assets). Es **recuperen d'allà**; només si no hi són, es regeneren amb el motor existent |
+| `auditor.py`, `retalla_cb_perfecte.py` | Verificació, sense codi nou |
 
-| Etapa | Matèria | Anys | Ítems (registre) |
-|---|---|---|---|
-| 4t ESO (CB) | Matemàtiques | 2021–2026 | 178 |
-| 4t ESO (CB) | Ciència i tecnologia | 2021–2026 | 217 |
-| 2n ESO (avaluació de diagnòstic) | Matemàtiques | 2024–2026 | 69 |
-| 2n ESO (avaluació de diagnòstic) | Ciència i tecnologia | 2024–2026 | 118 |
-| | | **Total** | **582** |
+Les captures de `banc-proves-oficials/.cache/cb` **no** serveixen (segmentació automàtica genèrica: p. ex. 25 ítems per CTE quan el registre en té 27–49).
 
-Font: PDF de `docencia/materials/competencies_basiques/{2ESO,4ESO}/…` (prova + criteris). No se'n descarreguen de nous.
+## Proves (18, 582 ítems)
 
-## Escenaris d'usuari i proves *(obligatori)*
+4t ESO Mat 2021–26 (178) · 4t ESO CTE 2021–26 (217) · 2n ESO Mat 2024–26 (69) · 2n ESO CTE 2024–26 (118). Font: `docencia/materials/competencies_basiques/`.
 
-### Història 1 — Saber que la BD és completa (Prioritat: P1)
+## Històries
 
-Com a professor vull que el nombre d'ítems de cada prova a la BD sigui el del registre oficial de respostes, i que qualsevol forat sigui una excepció escrita i justificada.
+1. **P1 — Cercar.** `cb cerca "energia" --etapa 4ESO` dona ítems amb enunciat, captura, context i resposta. *Prova*: 5 cerques fixades amb resultats revisats.
+2. **P1 — BD completa.** `cb index` importa captures + registre i extreu el text (PDF; OCR de reserva) de cada ítem. `cb check`: 582 ítems = registre, cada ítem amb captura i text no buit, 0 captures repetides entre ítems, sub-ítem ≠ captura del pare, auditoria de marges/OCR (`auditor.py`) 100 % PASS. Excepcions escrites amb motiu.
+3. **P1 — Revisió ràpida.** `cb fulls` genera per prova un full de miniatures (context | ítem | resposta) per a la porta.
+4. **P2 — Vigilància.** `cb check` al check diari.
 
-**Prova independent**: `cb check` compara, per prova, ítems BD vs. registre (582 en total).
+## Requisits clau
 
-1. **Donada** una prova, **quan** s'executa `cb check`, **llavors** cada ítem del registre existeix a la BD amb la seva captura, i viceversa.
-2. **Donat** un ítem sense captura o sense resposta oficial, **llavors** `cb check` falla llevat que sigui a `data/excepcions.csv` amb motiu.
+- Esquema comú amb PAU (`id, etapa, materia, any, activitat_id, numero, pare, punts, bloc, tema, enunciat_text, solucio_text, enunciat_img, solucio_img, context_img, font_pdf, pag`). Dues taules: `activitats` (context) i `items`.
+- Ids: `CB_<etapa>_<MAT|CTE>_<any>_A<n>_I<n>[_<s>]`.
+- `solucio_text` = clau del registre (+ lletra correcta); sense captura de pauta.
+- `bloc/tema` per activitat: proposta per paraules clau, `revisat=no` fins que l'Adrià la reveu.
+- `crops/` i BD no es versionen: `cb index` els reconstrueix.
+- Ni Forms ni captures existents es modifiquen.
 
-### Història 2 — Cada ítem té la seva captura i el seu context (Prioritat: P1)
+## Riscos
 
-Com a professor vull que cada ítem i sub-ítem tingui **la seva pròpia captura**, i que el context de l'activitat sigui una imatge a part enllaçada, perquè no es repeteixi el mateix retall per a ítems diferents ni es mostri un ítem sense el que necessita.
-
-**Prova independent**: `cb check` (captures repetides, marges, OCR) i el full de miniatures per prova.
-
-1. **Donats** dos ítems diferents, **llavors** les seves captures no són idèntiques (0 duplicats per hash).
-2. **Donat** un sub-ítem, **llavors** la seva captura no és la del pare.
-3. **Donat** un ítem que depèn d'un context (compartit o no), **llavors** té `context_img` apuntant a una imatge existent, i la captura de l'ítem no conté el text del context (auditoria OCR).
-4. **Donada** qualsevol captura, **llavors** té marges blancs ≤ 15 px i no conté el número/enunciat d'un altre ítem.
-
-### Història 3 — Text i resposta oficial per a cada ítem (Prioritat: P1)
-
-Com a professor vull text cercable de l'enunciat de cada ítem (no només de l'activitat) i la seva resposta oficial, per poder cercar i mostrar-los.
-
-**Prova independent**: mostra de ítems al full de miniatures + `cb check` comprova que `enunciat_text` no és buit ni és el resum de l'activitat.
-
-1. **Donat** un ítem, **llavors** `enunciat_text` prové de l'ítem (text extret del PDF o OCR) i `solucio_text` és la resposta del registre (`answers_registry.py`); s'hi afegeix la justificació de la pauta quan n'hi ha.
-2. **Donat** un ítem amb resposta tipus opció múltiple, **llavors** guarda també la lletra correcta.
-
-### Història 4 — Fer servir la BD sense repetir feina (Prioritat: P2)
-
-Com a professor vull que `cb index` reconstrueixi tota la BD amb una sola ordre i que els Google Forms existents (18) no es trenquin.
-
-**Prova independent**: `cb index` seguit de `cb check` és verd; `cb build` per a una prova genera el Form com abans, ara a partir de la BD.
-
-1. **Donats** els 18 PDF i el registre, **quan** s'executa `cb index`, **llavors** es regenera `cb_catalog.db` + `crops/` sense passos manuals.
-2. **Donada** la BD, **llavors** un check diari (`scripts/checks-diaris.sh`) avisa si `cb check` falla o falten captures.
-
-## Requisits funcionals
-
-- **FR-001** Esquema compartit amb PAU (`id, etapa, materia, any, convocatoria, serie, activitat_id, numero, pare, punts, bloc, tema, enunciat_text, solucio_text, enunciat_img, solucio_img, context_img, font_pdf, pag`), amb `serie` buit i `convocatoria` = «CB» o «AD» segons la prova.
-- **FR-002** Id d'ítem: `CB_<etapa>_<MAT|CTE>_<any>_A<activitat>_I<n>` (sub-ítems: `…_I<n>_<s>`); id d'activitat: `CB_…_A<n>`.
-- **FR-003** Dues taules: `activitats` (context: títol, `context_img`, pàgines) i `items` (amb `activitat_id` i `pare`); un ítem pot apuntar a un context compartit.
-- **FR-004** L'estructura (quins ítems i contextos hi ha, i quins contextos són per a quins ítems) surt del registre existent i es verifica contra el PDF, no s'inventa.
-- **FR-005** Captura d'ítem = només l'ítem (i les seves opcions/figures); mai el context ni els ítems veïns.
-- **FR-006** `solucio_img`: només si els criteris oficials tenen una captura útil; si no, buit i documentat (la resposta del registre és la font).
-- **FR-007** `bloc`/`tema`: taula `data/cb_temes.csv` per activitat (proposta per paraules clau, marcada `revisat=no` fins que l'Adrià la reveu); la competència/dimensió oficial de la pauta s'hi guarda si hi és.
-- **FR-008** `cb check` verd = recompte per prova, 0 captures repetides, 0 sub-ítems amb la captura del pare, marges i OCR 100 % PASS, context enllaçat, text no buit.
-- **FR-009** `cb fulls` genera per prova un PDF de miniatures (context | ítem | resposta) per a la revisió visual.
-- **FR-010** Excepcions a `data/excepcions.csv` amb motiu; cap error de la font es corregeix a mà a la BD (`docs/METODOLOGIA.md`).
-
-## Fora d'abast
-
-- Descarregar proves noves (només les 18).
-- El mostrari web (fase 5) i canvis als Forms ja creats, llevat que `cb build` passi a llegir la BD.
-- Dades d'alumnes (no n'hi ha ni n'hi haurà).
-
-## Criteris d'èxit
-
-- **SC-001** `cb check` verd sobre les 18 proves i 582 ítems.
-- **SC-002** El full de miniatures de cada prova, revisat per l'Adrià, sense captures errònies (porta de la fase 3).
-- **SC-003** `cb index` + `cb check` es poden repetir en una màquina neta amb només els PDF i el registre (temps esperat < 10 min).
-- **SC-004** 0 captures a `scratch/`: totes viuen a `docencia/materials/competencies_basiques/cb_catalog/crops/`.
-
-## Riscos i preguntes obertes
-
-1. **Estructura a mà del registre**: les imatges de context tenen noms triats a mà (`context_act1_temps`). Proposta: el registre continua sent la font de l'estructura i el segmentador ha de trobar-ne les regions al PDF; els contextos que no es trobin automàticament es marquen amb coordenades manuals a `data/overrides.csv` (com a PAU).
-2. **Text dels ítems**: els PDF són vectorials (text extraïble) però hi pot haver gràfics amb text incrustat; OCR només com a reserva.
-3. **`solucio_img`**: probablement no en calgui (respostes curtes al registre); vegeu FR-006.
-4. **Versionar `crops/` i BD**: proposta = no (es regeneren amb `cb index`), igual que a PAU.
+1. Que les imatges de 4t no siguin recuperables de Drive → es regeneren amb l'estructura del registre (més feina; s'avisa abans).
+2. Text d'ítems amb gràfics: OCR només on el PDF no té text.
 
 ## Preguntes per a l'Adrià
 
-- (a) Vols captura de la resposta/pauta oficial a cada ítem o n'hi ha prou amb la clau del registre? *(recomanat: la clau + justificació en text)*
-- (b) `bloc`/`tema` per a CB: activitat → bloc (Numeració, Espai i forma, Canvi i relacions, Estadística… per a Mat; Ciències per a CTE) us serveix, o vols una altra classificació?
-- (c) Confirmes no versionar `crops/` ni la BD (es regeneren amb `cb index`)?
+- (a) Bloc/tema per activitat (Mat: Numeració, Espai i forma, Canvi i relacions, Estadística; CTE: per àmbit), et va bé?
+- (b) Confirmes no versionar `crops/` ni la BD?
