@@ -13,7 +13,7 @@
 
 ## Verificació
 
-`cb check` verd (582 ítems, 0 duplicats, sub-ítem ≠ pare, auditoria 100 %) + 5 cerques + `cb fulls` per prova (porta).
+`cb check` verd (582 ítems, 0 duplicats, auditoria 100 %) + 5 cerques + `cb fulls` per prova (porta).
 
 ## Vigilància i neteja
 

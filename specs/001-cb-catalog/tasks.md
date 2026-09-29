@@ -1,9 +1,9 @@
 # Tasques 001 — estat viu
 
-- [ ] T001 Recuperar de Drive les captures de 4t ESO (12 proves) a `scratch/cb_recuperat/` i comparar el recompte amb el registre
+- [x] T001 Recuperar de Drive les captures de 4t ESO — 474 baixades; 607/607 captures del registre localitzades a Drive (sub-preguntes `_n` comparteixen la del pare)
 - [ ] T002 `catalog.py`: esquema SQLite + FTS5 (`activitats`, `items`)
 - [ ] T003 `indexer.py`: importar captures + text d'ítem + clau (`cb index`)
-- [ ] T004 `check.py` (`cb check`): 582 ítems, 0 duplicats, sub-ítem ≠ pare, auditoria
+- [ ] T004 `check.py` (`cb check`): 582 ítems, cada captura pròpia present, 0 duplicats entre captures d'ítems diferents, sub-preguntes amb `pare`, auditoria
 - [ ] T005 `cb cerca` + 5 cerques fixades
 - [ ] T006 `fulls.py` (`cb fulls`) i pujada a Drive
 - [ ] T007 `data/cb_temes.csv` (bloc/tema, `revisat=no`) i `data/excepcions.csv`

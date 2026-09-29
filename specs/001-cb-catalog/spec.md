@@ -13,13 +13,15 @@
 
 Les captures són **seccionades** (context, ítem 1, ítem 2…), tal com ja necessiten els Forms. **No es fa cap captura global de l'exercici** (seria la pàgina sencera). Un exercici és el conjunt de captures que comparteixen `activitat_id`: la BD les lliga i qui consumeix (cerca, mostrari) les apila en pantalla.
 
+**Sub-preguntes**: al registre, els ítems amb `_` (`4_1`, `4_2`…) són sub-preguntes d'un ítem que es responen **sobre la captura de l'ítem pare**; no tenen captura pròpia. A la BD són files amb `pare` i comparteixen la `enunciat_img` del pare (això és correcte, no un duplicat). Captura pròpia: cada ítem principal i cada context.
+
 ## Principi: aprofitar, no refer
 
 | Ja existeix | Ús |
 |---|---|
 | `answers_registry.py` (estructura: activitats, contextos, ítems, sub-ítems + clau) | Font de veritat del recompte i de l'estructura |
 | Captures auditades de 2n ESO (`scratch/crops_2eso*_clean`, 6 proves) | S'importen tal qual a `crops/` |
-| Captures auditades de 4t ESO (12 proves) | **Perdudes localment**; s'usaven als Forms, per tant les imatges són a Drive (carpeta d'assets). Es **recuperen d'allà**; només si no hi són, es regeneren amb el motor existent |
+| Captures auditades de 4t ESO (12 proves) | **Perdudes localment**; recuperades de la carpeta `_Assets_Imatges` de Drive (verificat: 607/607 captures del registre hi són, prefixades per prova) |
 | `auditor.py`, `retalla_cb_perfecte.py` | Verificació, sense codi nou |
 
 Les captures de `banc-proves-oficials/.cache/cb` **no** serveixen (segmentació automàtica genèrica: p. ex. 25 ítems per CTE quan el registre en té 27–49).
@@ -31,7 +33,7 @@ Les captures de `banc-proves-oficials/.cache/cb` **no** serveixen (segmentació 
 ## Històries
 
 1. **P1 — Cercar.** `cb cerca "energia" --etapa 4ESO` dona ítems amb enunciat, captura, context i resposta. *Prova*: 5 cerques fixades amb resultats revisats.
-2. **P1 — BD completa.** `cb index` importa captures + registre i extreu el text (PDF; OCR de reserva) de cada ítem. `cb check`: 582 ítems = registre, cada ítem amb captura i text no buit, 0 captures repetides entre ítems, sub-ítem ≠ captura del pare, auditoria de marges/OCR (`auditor.py`) 100 % PASS. Excepcions escrites amb motiu.
+2. **P1 — BD completa.** `cb index` importa captures + registre i extreu el text (PDF; OCR de reserva) de cada ítem. `cb check`: 582 ítems = registre, cada ítem amb captura i text no buit, 0 captures repetides entre captures d'ítems diferents, auditoria de marges/OCR (`auditor.py`) 100 % PASS. Excepcions escrites amb motiu.
 3. **P1 — Revisió ràpida.** `cb fulls` genera per prova un full de miniatures (context | ítem | resposta) per a la porta.
 4. **P2 — Vigilància.** `cb check` al check diari.
 
