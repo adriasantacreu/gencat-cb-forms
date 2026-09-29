@@ -54,9 +54,19 @@ def main():
     p_bld.add_argument("--assets-folder", required=True, help="ID de la carpeta d'imatges a Drive")
     p_bld.add_argument("--editor", default=None, help="Correu d'editor addicional")
 
+    subparsers.add_parser("index", help="Reconstrueix cb_catalog.db (registre + captures + OCR)")
+
     args = parser.parse_args()
 
-    if args.command == "download":
+    if args.command == "index":
+        try:
+            from src.indexer import index
+        except ImportError:
+            from indexer import index
+        st = index()
+        print(f"✓ {sum(st.values())} ítems a {len(st)} proves")
+
+    elif args.command == "download":
         out_dir = Path(args.out)
         res = download_exam(args.curs, args.materia, args.any, out_dir)
         print(f"✓ Descàrrega completada:\n  Prova: {res['prova']}\n  Criteris: {res['criteris']}")
