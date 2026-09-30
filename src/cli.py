@@ -60,6 +60,8 @@ def main():
     p_c.add_argument("--materia", choices=["mat", "cte"])
     p_c.add_argument("--limit", type=int, default=15)
     subparsers.add_parser("check", help="Comprova la BD (recompte, captures, duplicats, marges)")
+    p_v = subparsers.add_parser("vora", help="Captures tallades a la vora: simula (per defecte), --aplica, localitza o marges")
+    p_v.add_argument("accio", nargs=argparse.REMAINDER)
     p_f = subparsers.add_parser("fulls", help="Full de miniatures per a la revisió")
     p_f.add_argument("--out", required=True)
     p_f.add_argument("--prova", help="p. ex. CB4ESO_MAT_2026")
@@ -83,6 +85,9 @@ def main():
         from check import run
         sys.exit(run())
 
+    elif args.command == "vora":
+        from vora import main as vora_main
+        sys.exit(vora_main(args.accio))
     elif args.command == "fulls":
         from fulls import make_fulls
         print(make_fulls(Path(args.out), args.prova))

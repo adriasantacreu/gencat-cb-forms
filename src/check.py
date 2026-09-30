@@ -1,5 +1,7 @@
 """`cb check`: la BD de CCBB és completa i les captures són netes (recompte = registre, 0 duplicats, marges, contexts sense enunciats)."""
 import csv
+
+import cv2
 import hashlib
 import re
 from collections import defaultdict
@@ -8,6 +10,7 @@ from pathlib import Path
 from answers_registry import STRUCTURES
 from auditor import check_margins
 from catalog import CB_DIR, connect
+from vora import tinta_vora
 from indexer import ETAPA, OCR_CACHE, prova_id
 
 EXCEPCIONS = Path(__file__).resolve().parents[1] / "data" / "excepcions.csv"
@@ -60,18 +63,21 @@ def run() -> int:
     for h, grp in hashes.items():
         if len(grp) > 1:
             bad("f-duplicat", sorted(grp)[0], f"mateixa captura per a {sorted(grp)}")
-    # g. marges ≤ 15 px a totes les captures; h. cap context conté un enunciat d'ítem (text OCR ja calculat)
+    # g. marges ≤ 15 px a totes les captures; i. cap tinta a la vora inferior; h. cap context conté un enunciat d'ítem (text OCR ja calculat)
     for png in sorted((CB_DIR / "crops").glob("*/*.png")):
         m = check_margins(png)
         if not m["ok"]:
             bad("g-marges", f"{png.parent.name}/{png.name}", m.get("details") or m.get("error"))
+        v = tinta_vora(cv2.cvtColor(cv2.imread(str(png)), cv2.COLOR_BGR2GRAY))
+        if v["baix"] > 0:   # tinta tocant la vora inferior = captura tallada per sota (ratlles contínues no compten)
+            bad("i-vora", f"{png.parent.name}/{png.name}", f"tinta a la vora inferior ({v['baix']} px): captura tallada? (cb vora)")
         if png.stem.startswith("context_"):
             t = ocr.get(hashlib.sha1(png.read_bytes()).hexdigest(), "")
             cont = [ln for ln in t.splitlines() if (mm := ITEM_RE.match(ln)) and 1 <= int(mm.group(1)) <= 45]
             if cont:
                 bad("h-context-net", f"{png.parent.name}/{png.name}", f"conté {cont[:2]}")
     n_fail = sum(len(v) for v in fails.values())
-    checks = ["a-recompte", "b-captura", "c-text", "d-clau", "e-context", "f-duplicat", "g-marges", "h-context-net"]
+    checks = ["a-recompte", "b-captura", "c-text", "d-clau", "e-context", "f-duplicat", "g-marges", "h-context-net", "i-vora"]
     for c in checks:
         print(f"{'✓' if not fails[c] else '✗'} {c}: {len(fails[c])} errors")
         for m in fails[c][:8]:
