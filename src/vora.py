@@ -18,12 +18,28 @@ ZOOMS = (2.0, 200 / 72, 3.0, 1.5)
 MARGE = 6            # px blancs que es deixen sota l'última tinta
 
 
+def _regles(col: np.ndarray, ample: int = 4) -> np.ndarray:
+    """Només són regla vertical les tires contínues de com a màxim `ample` columnes; un dibuix ple (un cub, una figura) no ho és."""
+    out, i, n = np.zeros_like(col), 0, len(col)
+    while i < n:
+        if col[i]:
+            j = i
+            while j < n and col[j]:
+                j += 1
+            if j - i <= ample:
+                out[i:j] = True
+            i = j
+        else:
+            i += 1
+    return out
+
+
 def tinta_vora(g: np.ndarray, franja: int = 12) -> dict:
     """Tinta a la vora inferior/superior d'una imatge en gris, sense comptar línies contínues (regles, vores de caixa)."""
     out = {}
     for costat, z in (("baix", g[::-1]), ("dalt", g)):
         s = z[:franja] < 200
-        vert = s.sum(axis=0) >= franja - 2          # columnes amb ratlla vertical contínua
+        vert = _regles(s.sum(axis=0) >= franja - 2)          # columnes amb ratlla vertical contínua
         fila = s[:2].copy()
         fila[:, vert] = False
         amplada = (z[0] < 200).mean()

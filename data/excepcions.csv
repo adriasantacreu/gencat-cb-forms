@@ -15,3 +15,4 @@ CB2ESO_CTE_2025/item_11.png,i-vora,"Fals positiu: l'etiqueta F2 de la figura toc
 CB2ESO_CTE_2026/item_24.png,i-vora,"Fals positiu: les etiquetes a–d dels gràfics toquen la vora, però la captura és completa"
 CB2ESO_MAT_2025/context_act3_consum.png,i-vora,"Fals positiu: la vora inferior és el marc de la caixa blava"
 CB4ESO_CTE_2025/item_2.png,i-vora,"L'ítem continua a la pàgina següent del PDF (salt de pàgina): no es pot completar sense encadenar pàgines"
+CB2ESO_MAT_2024/item_15.png,i-vora,"Fals positiu: plànol de carrers que continua fora del requadre (les cantonades parcials són de l original); revisat visualment"
