@@ -1,0 +1,3 @@
+#!/bin/bash
+# scripts/cb — BD de Competències Bàsiques (gencat-cb-forms): index | check | cerca TEXT | fulls --out F
+cd /mnt/data/workspace && PYTHONPATH=projects/gencat-cb-forms/src exec .venv/bin/python projects/gencat-cb-forms/src/cli.py "$@"
